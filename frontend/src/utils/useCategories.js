@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const CATEGORIES_STORAGE_KEY = 'digital-organizer-categories';
-const DEFAULT_CATEGORIES = ['Обучение', 'Игры', 'Работа', 'Спорт', 'donate'];
+const DEFAULT_CATEGORIES = ['Обучение', 'Игры', 'Работа', 'Спорт'];
 
 export const useCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -40,9 +40,15 @@ export const useCategories = () => {
     localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(newCategories));
   };
 
+  const resetCategories = () => {
+    setCategories(DEFAULT_CATEGORIES);
+    localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(DEFAULT_CATEGORIES));
+  };
+
   return {
     categories,
     addCategory,
-    deleteCategory
+    deleteCategory,
+    resetCategories
   };
 }; 

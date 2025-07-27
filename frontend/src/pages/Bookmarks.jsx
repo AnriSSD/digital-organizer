@@ -300,32 +300,23 @@ const Bookmarks = () => {
           {categories.map((category) => (
             <div
               key={category}
-              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                category === 'donate' 
-                  ? 'bg-yellow-50 hover:bg-yellow-100 cursor-pointer' 
-                  : 'bg-gray-50 hover:bg-gray-100'
-              }`}
-              onClick={category === 'donate' ? () => window.location.href = '/donate' : undefined}
+              className="flex items-center justify-between p-3 rounded-lg transition-colors bg-gray-50 hover:bg-gray-100"
             >
               <div className="flex items-center space-x-2">
-                <span className={`w-2 h-2 rounded-full ${
-                  category === 'donate' ? 'bg-yellow-500' : 'bg-blue-500'
-                }`}></span>
+                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                 <span className="text-gray-900 font-medium">{category}</span>
               </div>
               
-              {category !== 'donate' && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteCategory(category);
-                  }}
-                  className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                  title="Удалить категорию"
-                >
-                  <XMarkIcon className="w-4 h-4" />
-                </button>
-              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteCategory(category);
+                }}
+                className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                title="Удалить категорию"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
             </div>
           ))}
         </div>
