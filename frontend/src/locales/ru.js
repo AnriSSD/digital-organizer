@@ -5,7 +5,33 @@ export default {
     addLink: 'Добавить ссылку',
     bookmarks: 'Мои закладки',
     support: 'Поддержать',
-    about: 'О проекте'
+    about: 'О проекте',
+    more: 'Ещё',
+    logout: 'Выйти'
+  },
+
+  // Auth
+  auth: {
+    signIn: 'Войти',
+    signUp: 'Регистрация',
+    createAccount: 'Создать аккаунт',
+    email: 'Email',
+    emailPlaceholder: 'Введите ваш email',
+    password: 'Пароль',
+    passwordPlaceholder: 'Введите пароль',
+    confirmPassword: 'Подтвердите пароль',
+    confirmPasswordPlaceholder: 'Повторите пароль',
+    passwordMinLength: 'Минимум 6 символов',
+    or: 'или',
+    orContinueWith: 'или продолжить с',
+    signingIn: 'Вход...',
+    creatingAccount: 'Создание аккаунта...',
+    passwordTooShort: 'Пароль должен содержать минимум 6 символов',
+    passwordsDoNotMatch: 'Пароли не совпадают',
+    invalidEmail: 'Неверный формат email',
+    registrationSuccess: 'Аккаунт успешно создан! Теперь вы можете войти.',
+    loginWithGoogle: 'Войти через Google',
+    loginWithGitHub: 'Войти через GitHub'
   },
 
   // Home page

@@ -5,7 +5,33 @@ export default {
     addLink: 'Add Link',
     bookmarks: 'My Bookmarks',
     support: 'Support',
-    about: 'About'
+    about: 'About',
+    more: 'More',
+    logout: 'Logout'
+  },
+
+  // Auth
+  auth: {
+    signIn: 'Sign In',
+    signUp: 'Sign Up',
+    createAccount: 'Create Account',
+    email: 'Email',
+    emailPlaceholder: 'Enter your email',
+    password: 'Password',
+    passwordPlaceholder: 'Enter password',
+    confirmPassword: 'Confirm Password',
+    confirmPasswordPlaceholder: 'Repeat password',
+    passwordMinLength: 'Minimum 6 characters',
+    or: 'or',
+    orContinueWith: 'or continue with',
+    signingIn: 'Signing in...',
+    creatingAccount: 'Creating account...',
+    passwordTooShort: 'Password must be at least 6 characters long',
+    passwordsDoNotMatch: 'Passwords do not match',
+    invalidEmail: 'Invalid email format',
+    registrationSuccess: 'Account created successfully! You can now sign in.',
+    loginWithGoogle: 'Sign in with Google',
+    loginWithGitHub: 'Sign in with GitHub'
   },
 
   // Home page
