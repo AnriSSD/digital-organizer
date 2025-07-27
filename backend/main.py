@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
+from app.api.screenshots import router as screenshots_router
 from app.database import engine
 from app.models.user import Base
+from app.models.screenshot import Screenshot  # noqa: F401
 
 # Создаем таблицы
 Base.metadata.create_all(bind=engine)
@@ -47,6 +49,7 @@ app.add_middleware(
 
 # Подключаем роуты
 app.include_router(auth_router)
+app.include_router(screenshots_router)
 
 
 @app.get("/health")
