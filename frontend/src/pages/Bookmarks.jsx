@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, MagnifyingGlassIcon, FunnelIcon, TagIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, FunnelIcon, TagIcon, XMarkIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
 import TagBadge from '../components/TagBadge';
 import CategoryBadge from '../components/CategoryBadge';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import AddCategoryModal from '../components/AddCategoryModal';
+import AddScreenshotModal from '../components/AddScreenshotModal';
+import ScreenshotCard from '../components/ScreenshotCard';
 import { useCategories } from '../utils/useCategories';
+import axios from 'axios';
 
 const Bookmarks = () => {
   const { categories, addCategory, deleteCategory } = useCategories();
   const [bookmarks, setBookmarks] = useState([]);
+  const [screenshots, setScreenshots] = useState([]);
   const [filteredBookmarks, setFilteredBookmarks] = useState([]);
+  const [filteredScreenshots, setFilteredScreenshots] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,11 +25,25 @@ const Bookmarks = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [showAddScreenshotModal, setShowAddScreenshotModal] = useState(false);
   const itemsPerPage = 10;
 
   // Получение закладок с backend
   useEffect(() => {
     fetchBookmarks();
+    fetchScreenshots();
+  }, []);
+
+  // Слушаем событие открытия модального окна скриншотов
+  useEffect(() => {
+    const handleOpenScreenshotModal = () => {
+      setShowAddScreenshotModal(true);
+    };
+
+    window.addEventListener('openAddScreenshotModal', handleOpenScreenshotModal);
+    return () => {
+      window.removeEventListener('openAddScreenshotModal', handleOpenScreenshotModal);
+    };
   }, []);
 
   const fetchBookmarks = async () => {
@@ -86,47 +105,104 @@ const Bookmarks = () => {
     }
   };
 
+  const fetchScreenshots = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get('/screenshots/', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      setScreenshots(response.data.screenshots);
+      setFilteredScreenshots(response.data.screenshots);
+    } catch (error) {
+      console.error('Ошибка загрузки скриншотов:', error);
+      // Не показываем ошибку пользователю, если он не авторизован
+    }
+  };
+
+  const handleDeleteCategory = (categoryName) => {
+    deleteCategory(categoryName);
+  };
+
+  const handleScreenshotUpload = (newScreenshot) => {
+    setScreenshots(prev => [newScreenshot, ...prev]);
+    setFilteredScreenshots(prev => [newScreenshot, ...prev]);
+  };
+
+  const handleScreenshotDelete = (screenshotId) => {
+    setScreenshots(prev => prev.filter(s => s.id !== screenshotId));
+    setFilteredScreenshots(prev => prev.filter(s => s.id !== screenshotId));
+  };
+
   // Фильтрация и поиск
   useEffect(() => {
     let filtered = bookmarks;
+    let filteredScreenshotsData = screenshots;
 
-    // Поиск по заголовку и тегам
+    // Поиск по заголовку и тегам для закладок
     if (searchTerm) {
       filtered = filtered.filter(bookmark =>
         bookmark.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         bookmark.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+      
+      // Поиск по названию файла и описанию для скриншотов
+      filteredScreenshotsData = filteredScreenshotsData.filter(screenshot =>
+        screenshot.original_filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (screenshot.description && screenshot.description.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
     // Фильтр по категории
     if (selectedCategory) {
       filtered = filtered.filter(bookmark => bookmark.category === selectedCategory);
+      filteredScreenshotsData = filteredScreenshotsData.filter(screenshot => screenshot.category === selectedCategory);
     }
 
-    // Фильтр по тегам
+    // Фильтр по статусу (только для закладок)
+    if (readFilter === 'read') {
+      filtered = filtered.filter(bookmark => bookmark.is_read);
+    } else if (readFilter === 'unread') {
+      filtered = filtered.filter(bookmark => !bookmark.is_read);
+    }
+
+    // Фильтр по тегам (только для закладок)
     if (selectedTags.length > 0) {
       filtered = filtered.filter(bookmark =>
         selectedTags.every(tag => bookmark.tags.includes(tag))
       );
     }
 
-    // Фильтр по статусу прочтения
-    if (readFilter !== 'all') {
-      const isRead = readFilter === 'read';
-      filtered = filtered.filter(bookmark => bookmark.is_read === isRead);
-    }
-
     setFilteredBookmarks(filtered);
+    setFilteredScreenshots(filteredScreenshotsData);
     setCurrentPage(1);
-  }, [bookmarks, searchTerm, selectedCategory, selectedTags, readFilter]);
+  }, [bookmarks, screenshots, searchTerm, selectedCategory, selectedTags, readFilter]);
 
   // Получение уникальных категорий и тегов
-  const availableCategories = [...new Set(bookmarks.map(b => b.category).filter(Boolean))];
+  const { categories: availableCategories } = useCategories();
+  const allCategories = [...new Set([
+    ...availableCategories,
+    ...bookmarks.map(b => b.category).filter(Boolean),
+    ...screenshots.map(s => s.category).filter(Boolean)
+  ])];
+
   const allTags = [...new Set(bookmarks.flatMap(b => b.tags))];
 
-  // Пагинация
-  const paginatedBookmarks = filteredBookmarks.slice(0, currentPage * itemsPerPage);
-  const hasMorePages = paginatedBookmarks.length < filteredBookmarks.length;
+  // Объединяем закладки и скриншоты для отображения
+  const allItems = [
+    ...filteredBookmarks.map(bookmark => ({ ...bookmark, type: 'bookmark' })),
+    ...filteredScreenshots.map(screenshot => ({ ...screenshot, type: 'screenshot' }))
+  ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  // Пагинация для объединенного списка
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedItems = allItems.slice(0, endIndex);
+  const hasMorePages = endIndex < allItems.length;
 
   const loadMore = () => {
     setCurrentPage(prev => prev + 1);
@@ -163,16 +239,6 @@ const Bookmarks = () => {
     addCategory(categoryName);
   };
 
-  const handleDeleteCategory = (categoryName) => {
-    if (window.confirm(`Удалить категорию "${categoryName}"?`)) {
-      deleteCategory(categoryName);
-      // Если удаляемая категория была выбрана в фильтре, сбрасываем фильтр
-      if (selectedCategory === categoryName) {
-        setSelectedCategory('');
-      }
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -195,6 +261,13 @@ const Bookmarks = () => {
           >
             <TagIcon className="h-4 w-4 mr-2" />
             Добавить категорию
+          </button>
+          <button
+            onClick={() => setShowAddScreenshotModal(true)}
+            className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+          >
+            <PhotoIcon className="h-4 w-4 mr-2" />
+            Добавить скриншот
           </button>
           <Link
             to="/add"
@@ -234,7 +307,7 @@ const Bookmarks = () => {
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
           >
             <option value="">Все категории</option>
-            {categories.map(category => (
+            {allCategories.map(category => (
               <option key={category} value={category}>{category}</option>
             ))}
           </select>
@@ -293,11 +366,11 @@ const Bookmarks = () => {
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Управление категориями</h3>
-          <span className="text-sm text-gray-500">{categories.length} категорий</span>
+          <span className="text-sm text-gray-500">{allCategories.length} категорий</span>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {categories.map((category) => (
+          {allCategories.map((category) => (
             <div
               key={category}
               className="flex items-center justify-between p-3 rounded-lg transition-colors bg-gray-50 hover:bg-gray-100"
@@ -323,7 +396,7 @@ const Bookmarks = () => {
       </div>
 
       {/* Список закладок */}
-      {filteredBookmarks.length === 0 ? (
+      {paginatedItems.length === 0 ? (
         <div className="text-center py-12">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
             <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,56 +422,115 @@ const Bookmarks = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {paginatedBookmarks.map(bookmark => (
-            <div key={bookmark.id} className="bg-white rounded-lg shadow-sm p-6">
+          {paginatedItems.map(item => (
+            <div key={item.id} className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
-                    <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                    </svg>
+                    {item.type === 'bookmark' ? (
+                      <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                      </svg>
+                    ) : (
+                      <PhotoIcon className="h-6 w-6 text-gray-400" />
+                    )}
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium text-gray-900 truncate">
-                      <a
-                        href={bookmark.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-primary transition-colors"
-                      >
-                        {bookmark.title}
-                      </a>
+                      {item.type === 'bookmark' ? (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-primary transition-colors"
+                        >
+                          {item.title}
+                        </a>
+                      ) : (
+                        <span>{item.original_filename}</span>
+                      )}
                     </h3>
-                    <button
-                      onClick={() => toggleReadStatus(bookmark.id)}
-                      className={`ml-2 px-2 py-1 text-xs rounded-full ${
-                        bookmark.is_read
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      {bookmark.is_read ? 'Прочитано' : 'Не прочитано'}
-                    </button>
+                                         {item.type === 'bookmark' && (
+                        <button
+                          onClick={() => toggleReadStatus(item.id)}
+                          className={`ml-2 px-2 py-1 text-xs rounded-full ${
+                            item.is_read
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {item.is_read ? 'Прочитано' : 'Не прочитано'}
+                        </button>
+                     )}
+                     {item.type === 'screenshot' && (
+                        <button
+                          onClick={() => handleScreenshotDelete(item.id)}
+                          className="ml-2 p-1 text-gray-400 hover:text-red-600 transition-colors"
+                          title="Удалить скриншот"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">{bookmark.description}</p>
-                  <a
-                    href={bookmark.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline mt-1 block"
-                  >
-                    {bookmark.url}
-                  </a>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {bookmark.category && (
-                      <CategoryBadge category={bookmark.category} />
-                    )}
-                    {bookmark.tags.map(tag => (
-                      <TagBadge key={tag} tag={tag} />
-                    ))}
-                  </div>
+                                     {item.type === 'bookmark' && (
+                     <>
+                       <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline mt-1 block"
+                        >
+                          {item.url}
+                        </a>
+                       <div className="flex flex-wrap gap-2 mt-3">
+                         {item.category && <CategoryBadge category={item.category} />}
+                         {item.tags.map(tag => <TagBadge key={tag} tag={tag} />)}
+                       </div>
+                     </>
+                   )}
+                  {item.type === 'screenshot' && (
+                    <>
+                      {item.description && (
+                        <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                      )}
+                      <div className="mt-3">
+                        <img
+                          src={`/screenshots/${item.id}/file`}
+                          alt={item.description || item.original_filename}
+                          className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => {
+                            // Открываем скриншот в полном размере
+                            const modal = document.createElement('div');
+                            modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4';
+                            modal.onclick = () => document.body.removeChild(modal);
+                            
+                            const img = document.createElement('img');
+                            img.src = `/screenshots/${item.id}/file`;
+                            img.className = 'max-w-full max-h-full object-contain';
+                            img.onclick = (e) => e.stopPropagation();
+                            
+                            const closeBtn = document.createElement('button');
+                            closeBtn.innerHTML = '×';
+                            closeBtn.className = 'absolute top-4 right-4 text-white hover:text-gray-300 text-2xl font-bold';
+                            closeBtn.onclick = () => document.body.removeChild(modal);
+                            
+                            modal.appendChild(img);
+                            modal.appendChild(closeBtn);
+                            document.body.appendChild(modal);
+                          }}
+                        />
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {item.category && <CategoryBadge category={item.category} />}
+                        <span className="text-xs text-gray-400">
+                          {item.mime_type.split('/')[1].toUpperCase()}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -418,12 +550,21 @@ const Bookmarks = () => {
         </div>
       )}
 
+
+
       {/* Модальное окно добавления категории */}
       <AddCategoryModal
         isOpen={showAddCategoryModal}
         onClose={() => setShowAddCategoryModal(false)}
         onAddCategory={handleAddCategory}
-        categories={categories}
+        categories={allCategories}
+      />
+
+      {/* Модальное окно добавления скриншота */}
+      <AddScreenshotModal
+        isOpen={showAddScreenshotModal}
+        onClose={() => setShowAddScreenshotModal(false)}
+        onSuccess={handleScreenshotUpload}
       />
     </div>
   );

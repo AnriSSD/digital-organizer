@@ -8,7 +8,8 @@ import {
   HeartIcon,
   ChevronDownIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -32,6 +33,12 @@ const Header = () => {
     { path: '/about', label: t('header.about'), icon: InformationCircleIcon },
     { path: '/donate', label: t('header.support'), icon: HeartIcon },
   ];
+
+  const handleAddScreenshot = () => {
+    // Открываем модальное окно через глобальное событие
+    window.dispatchEvent(new CustomEvent('openAddScreenshotModal'));
+    closeDropdown();
+  };
 
   const handleLogout = () => {
     logout();
@@ -94,6 +101,8 @@ const Header = () => {
                 </Link>
               );
             })}
+            
+
           </nav>
 
           {/* Правая часть (десктоп) */}
@@ -110,6 +119,15 @@ const Header = () => {
 
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                  {/* Кнопка добавления скриншота */}
+                  <button
+                    onClick={handleAddScreenshot}
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors w-full"
+                  >
+                    <PhotoIcon className="h-4 w-4 mr-3" />
+                    Add Screenshot
+                  </button>
+                  
                   {moreMenuItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
@@ -186,6 +204,18 @@ const Header = () => {
                   </Link>
                 );
               })}
+
+              {/* Кнопка добавления скриншота */}
+              <button
+                onClick={() => {
+                  handleAddScreenshot();
+                  closeMobileMenu();
+                }}
+                className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+              >
+                <PhotoIcon className="h-5 w-5 mr-3" />
+                Add Screenshot
+              </button>
 
               {/* Дополнительные пункты */}
               {moreMenuItems.map((item) => {

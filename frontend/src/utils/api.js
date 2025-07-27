@@ -47,6 +47,47 @@ class ApiClient {
     });
   }
 
+  // Скриншоты
+  async getScreenshots() {
+    return this.request('/screenshots/');
+  }
+
+  async uploadScreenshot(formData) {
+    const url = `${this.baseURL}/screenshots/upload`;
+    const token = localStorage.getItem('token');
+    
+    const config = {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    };
+
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Screenshot upload failed:', error);
+      throw error;
+    }
+  }
+
+  async deleteScreenshot(screenshotId) {
+    const token = localStorage.getItem('token');
+    return this.request(`/screenshots/${screenshotId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  }
+
   // Парсинг URL
   async parseUrl(url) {
     return this.request('/parse-url', {

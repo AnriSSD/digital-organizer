@@ -3,10 +3,10 @@ export default {
   header: {
     logo: 'Digital Organizer',
     home: 'Home',
-    addLink: 'Add Link',
     bookmarks: 'My Bookmarks',
-    support: 'Support',
+    addLink: 'Add Link',
     about: 'About',
+    support: 'Support',
     more: 'More',
     logout: 'Logout'
   },
@@ -20,37 +20,57 @@ export default {
   auth: {
     signIn: 'Sign In',
     signUp: 'Sign Up',
-    createAccount: 'Create Account',
     email: 'Email',
-    emailPlaceholder: 'Enter your email',
     password: 'Password',
-    passwordPlaceholder: 'Enter password',
     confirmPassword: 'Confirm Password',
+    forgotPassword: 'Forgot Password?',
+    resetPassword: 'Reset Password',
+    createAccount: 'Create Account',
+    alreadyHaveAccount: 'Already have an account?',
+    emailPlaceholder: 'Enter email',
+    passwordPlaceholder: 'Enter password',
     confirmPasswordPlaceholder: 'Repeat password',
-    passwordMinLength: 'Minimum 6 characters',
-    or: 'or',
-    orContinueWith: 'or continue with',
+    signInWithGoogle: 'Sign in with Google',
+    signInWithGitHub: 'Sign in with GitHub',
+    orContinueWith: 'Or continue with',
     signingIn: 'Signing in...',
     creatingAccount: 'Creating account...',
-    passwordTooShort: 'Password must be at least 6 characters long',
+    passwordTooShort: 'Password must be at least 6 characters',
     passwordsDoNotMatch: 'Passwords do not match',
     invalidEmail: 'Invalid email format',
-    registrationSuccess: 'Account created successfully! You can now sign in.',
-    loginWithGoogle: 'Sign in with Google',
-    loginWithGitHub: 'Sign in with GitHub'
+    registrationSuccess: 'Registration successful! Now sign in.',
+    loginError: 'Login error',
+    registrationError: 'Registration error'
   },
 
   // Home page
   home: {
-    welcome: 'Welcome!',
-    description: 'Digital Organizer helps you save and organize links with AI',
-    apiStatus: 'Backend API Status:',
-    apiWorking: '✓ API is working',
-    apiUnavailable: '✗ API unavailable',
+    welcome: 'Welcome to Digital Organizer',
+    description: 'Manage your bookmarks and screenshots efficiently',
+    apiStatus: 'API Status',
+    apiWorking: 'API is working',
+    apiUnavailable: 'API unavailable',
     checking: 'Checking...',
     addLink: 'Add Link',
     myBookmarks: 'My Bookmarks',
-    supportProject: 'Support Project'
+    supportProject: 'Support Project',
+    title: 'Welcome to Digital Organizer',
+    subtitle: 'Manage your bookmarks and screenshots efficiently',
+    apiConnected: 'API Connected',
+    apiDisconnected: 'API Disconnected',
+    quickActions: 'Quick Actions',
+    addBookmark: 'Add Bookmark',
+    viewBookmarks: 'View Bookmarks',
+    addScreenshot: 'Add Screenshot',
+    features: 'Features',
+    featuresList: [
+      'Save important links',
+      'Organize bookmarks by categories',
+      'Add tags for quick search',
+      'Upload screenshots',
+      'Track read materials',
+      'Secure authentication'
+    ]
   },
 
   // Add Link page
@@ -82,10 +102,34 @@ export default {
     }
   },
 
+  // Add Screenshot page
+  addScreenshot: {
+    title: 'Add Screenshot',
+    description: 'Upload an image and add description',
+    selectFile: 'Select file *',
+    dragDrop: 'or drag and drop here',
+    fileTypes: 'PNG, JPG up to 5MB',
+    category: 'Category *',
+    selectCategory: 'Select category',
+    description: 'Description',
+    descriptionPlaceholder: 'Brief screenshot description...',
+    upload: 'Upload',
+    uploading: 'Uploading...',
+    cancel: 'Cancel',
+    errors: {
+      fileRequired: 'Please select a file',
+      categoryRequired: 'Please select a category',
+      fileTypeError: 'Please select a JPG or PNG file',
+      fileSizeError: 'File size should not exceed 5MB',
+      uploadError: 'Error uploading file'
+    }
+  },
+
   // Bookmarks page
   bookmarks: {
     title: 'My Bookmarks',
     addLink: 'Add Link',
+    addScreenshot: 'Add Screenshot',
     addCategory: 'Add Category',
     searchPlaceholder: 'Search by title or tags...',
     allCategories: 'All categories',
@@ -99,8 +143,9 @@ export default {
     noBookmarksFilter: 'Try changing filters',
     addFirstBookmark: 'Add your first bookmark',
     showMore: 'Show more',
-    read: 'Read',
-    unread: 'Unread'
+    screenshots: 'Screenshots',
+    noScreenshots: 'No screenshots',
+    addFirstScreenshot: 'Add your first screenshot'
   },
 
   // Category management
@@ -119,71 +164,49 @@ export default {
     }
   },
 
-  // Donate page
-  donate: {
-    title: 'Support Project',
-    description: 'If you like Digital Organizer and want to help with its development — I will be grateful for any support.',
-    info: 'This project is made in free time, and donations help cover server costs, domain, OpenAI API and new features.',
-    bankTransfers: 'Bank Transfers',
-    georgia: 'Georgia:',
-    russia: 'Russia (Tinkoff):',
-    international: 'International via PayPal',
-    crypto: 'Cryptocurrency',
-    paypalNote: '(you can send any amount in any currency)',
-    backToBookmarks: 'Back to Bookmarks',
-    bankOfGeorgia: 'Bank of Georgia',
-    tbcBank: 'TBC Bank',
-    recipient: 'Recipient',
-    cardNumber: 'Card number'
+  // Screenshot management
+  screenshots: {
+    deleteConfirm: 'Are you sure you want to delete this screenshot?',
+    deleteError: 'Error deleting screenshot',
+    fileSize: 'Size',
+    uploadDate: 'Upload date',
+    viewFull: 'View full image',
+    delete: 'Delete screenshot'
   },
 
   // About page
   about: {
-    title: 'About Project',
-    description: 'Digital Organizer is a web application for saving and organizing bookmarks with AI classification.',
+    title: 'About',
+    description: 'Digital Organizer is a modern web application for managing bookmarks and screenshots.',
     features: 'Features',
     featuresList: [
-      'Automatic metadata extraction from links',
-      'AI classification by categories and tags',
-      'Convenient search and filtering of bookmarks',
-      'Reading status tracking',
-      'Adaptive design for all devices',
-      'Draft saving in localStorage'
+      'Quick link saving',
+      'Automatic metadata extraction',
+      'Organization by categories and tags',
+      'Screenshot upload and management',
+      'Search and filtering',
+      'Secure authentication',
+      'Responsive design'
     ],
     technologies: 'Technologies',
-    frontend: 'Frontend',
     backend: 'Backend',
-    plans: 'Development Plans',
-    plansList: [
-      'Telegram Bot - adding links via Telegram',
-      'Data export - export to various formats',
-      'Synchronization - sync between devices',
-      'Users - authentication system',
-      'Collections - grouping bookmarks',
-      'Statistics - usage analytics'
-    ]
+    frontend: 'Frontend',
+    backendTech: ['FastAPI', 'SQLAlchemy', 'SQLite', 'JWT', 'Python'],
+    frontendTech: ['React', 'Tailwind CSS', 'Vite', 'Axios', 'JavaScript']
   },
 
-  // Common
-  common: {
-    loading: 'Loading...',
-    error: 'Error',
-    success: 'Success',
-    save: 'Save',
-    cancel: 'Cancel',
-    delete: 'Delete',
-    edit: 'Edit',
-    close: 'Close',
-    back: 'Back',
-    next: 'Next',
-    previous: 'Previous',
-    search: 'Search',
-    filter: 'Filter',
-    clear: 'Clear',
-    all: 'All',
-    none: 'None',
-    yes: 'Yes',
-    no: 'No',
-    ok: 'OK'
+  // Donate page
+  donate: {
+    title: 'Support the Project',
+    description: 'If you like the project, you can support its development',
+    thankYou: 'Thank you for your support!'
+  },
+
+  // 404 page
+  notFound: {
+    title: 'Page Not Found',
+    description: 'Sorry, the requested page does not exist.',
+    goHome: 'Go to Home',
+    goBack: 'Go Back'
   }
 }; 
