@@ -72,13 +72,7 @@ const Home = () => {
                 {t('home.description')}
               </p>
               
-              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 mb-12 border border-gray-100">
-                <h3 className="text-base font-semibold text-gray-800 mb-3">{t('home.apiStatus')}</h3>
-                <div className="flex items-center justify-center space-x-3">
-                  {getStatusIcon()}
-                  <span className="text-base text-gray-700 font-medium">{getStatusText()}</span>
-                </div>
-              </div>
+
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Link

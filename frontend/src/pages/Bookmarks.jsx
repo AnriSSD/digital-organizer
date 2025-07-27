@@ -7,7 +7,9 @@ import LoadingSkeleton from '../components/LoadingSkeleton';
 import AddCategoryModal from '../components/AddCategoryModal';
 import AddScreenshotModal from '../components/AddScreenshotModal';
 import ScreenshotCard from '../components/ScreenshotCard';
+import ScreenshotImage from '../components/ScreenshotImage';
 import { useCategories } from '../utils/useCategories';
+import { apiClient } from '../utils/api';
 import axios from 'axios';
 
 const Bookmarks = () => {
@@ -133,9 +135,18 @@ const Bookmarks = () => {
     setFilteredScreenshots(prev => [newScreenshot, ...prev]);
   };
 
-  const handleScreenshotDelete = (screenshotId) => {
-    setScreenshots(prev => prev.filter(s => s.id !== screenshotId));
-    setFilteredScreenshots(prev => prev.filter(s => s.id !== screenshotId));
+  const handleScreenshotDelete = async (screenshotId) => {
+    try {
+      // Удаляем с сервера
+      await apiClient.deleteScreenshot(screenshotId);
+      
+      // Удаляем из состояния
+      setScreenshots(prev => prev.filter(s => s.id !== screenshotId));
+      setFilteredScreenshots(prev => prev.filter(s => s.id !== screenshotId));
+    } catch (error) {
+      console.error('Ошибка при удалении скриншота:', error);
+      alert('Ошибка при удалении скриншота');
+    }
   };
 
   // Фильтрация и поиск
@@ -497,29 +508,57 @@ const Bookmarks = () => {
                         <p className="text-sm text-gray-600 mt-1">{item.description}</p>
                       )}
                       <div className="mt-3">
-                        <img
-                          src={`/screenshots/${item.id}/file`}
+                        <ScreenshotImage
+                          screenshotId={item.id}
                           alt={item.description || item.original_filename}
-                          className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => {
+                          className="w-full h-32 object-contain rounded-lg cursor-pointer hover:opacity-90 transition-opacity bg-gray-100"
+                          onClick={async () => {
                             // Открываем скриншот в полном размере
                             const modal = document.createElement('div');
                             modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4';
                             modal.onclick = () => document.body.removeChild(modal);
                             
-                            const img = document.createElement('img');
-                            img.src = `/screenshots/${item.id}/file`;
-                            img.className = 'max-w-full max-h-full object-contain';
-                            img.onclick = (e) => e.stopPropagation();
-                            
-                            const closeBtn = document.createElement('button');
-                            closeBtn.innerHTML = '×';
-                            closeBtn.className = 'absolute top-4 right-4 text-white hover:text-gray-300 text-2xl font-bold';
-                            closeBtn.onclick = () => document.body.removeChild(modal);
-                            
-                            modal.appendChild(img);
-                            modal.appendChild(closeBtn);
-                            document.body.appendChild(modal);
+                            try {
+                              const token = localStorage.getItem('token');
+                              if (!token) {
+                                alert('Необходима авторизация для просмотра изображения');
+                                return;
+                              }
+
+                              const response = await fetch(`http://localhost:8000/screenshots/${item.id}/file`, {
+                                headers: {
+                                  'Authorization': `Bearer ${token}`
+                                }
+                              });
+
+                              if (response.ok) {
+                                const blob = await response.blob();
+                                const url = URL.createObjectURL(blob);
+                                
+                                const img = document.createElement('img');
+                                img.src = url;
+                                img.className = 'max-w-full max-h-full object-contain';
+                                img.onclick = (e) => e.stopPropagation();
+                                img.onload = () => {
+                                  // Очищаем URL после загрузки
+                                  URL.revokeObjectURL(url);
+                                };
+                                
+                                const closeBtn = document.createElement('button');
+                                closeBtn.innerHTML = '×';
+                                closeBtn.className = 'absolute top-4 right-4 text-white hover:text-gray-300 text-2xl font-bold';
+                                closeBtn.onclick = () => document.body.removeChild(modal);
+                                
+                                modal.appendChild(img);
+                                modal.appendChild(closeBtn);
+                                document.body.appendChild(modal);
+                              } else {
+                                alert('Ошибка загрузки изображения');
+                              }
+                            } catch (error) {
+                              console.error('Ошибка при открытии изображения:', error);
+                              alert('Ошибка при открытии изображения');
+                            }
                           }}
                         />
                       </div>
