@@ -65,7 +65,7 @@ const Header = () => {
               className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
               onClick={closeMobileMenu}
             >
-              Цифровой Органайзер
+              {t('header.logo')}
             </Link>
           </div>
 

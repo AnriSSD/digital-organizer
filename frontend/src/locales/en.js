@@ -1,6 +1,7 @@
 export default {
   // Header
   header: {
+    logo: 'Digital Organizer',
     home: 'Home',
     addLink: 'Add Link',
     bookmarks: 'My Bookmarks',
@@ -8,6 +9,11 @@ export default {
     about: 'About',
     more: 'More',
     logout: 'Logout'
+  },
+
+  // Footer
+  footer: {
+    copyright: '© 2025 Digital Organizer. All rights reserved.'
   },
 
   // Auth

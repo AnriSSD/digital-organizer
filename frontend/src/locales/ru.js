@@ -1,6 +1,7 @@
 export default {
   // Header
   header: {
+    logo: 'Цифровой Органайзер',
     home: 'Главная',
     addLink: 'Добавить ссылку',
     bookmarks: 'Мои закладки',
@@ -8,6 +9,11 @@ export default {
     about: 'О проекте',
     more: 'Ещё',
     logout: 'Выйти'
+  },
+
+  // Footer
+  footer: {
+    copyright: '© 2025 Цифровой Органайзер. Все права защищены.'
   },
 
   // Auth
