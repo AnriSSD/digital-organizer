@@ -1,0 +1,19 @@
+{
+  "name": "digital-organizer",
+  "version": "1.0.0",
+  "description": "Digital Organizer - веб-приложение для сохранения и организации ссылок",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && python main.py",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && python main.py"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["bookmarks", "organizer", "react", "fastapi"],
+  "author": "AnriSSD",
+  "license": "MIT"
+} 
