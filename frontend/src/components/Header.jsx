@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { PlusIcon, BookmarkIcon, HomeIcon, InformationCircleIcon, TagIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, BookmarkIcon, HomeIcon, InformationCircleIcon, TagIcon, HeartIcon } from '@heroicons/react/24/outline';
 
 const Header = () => {
   const location = useLocation();
@@ -8,6 +8,7 @@ const Header = () => {
     { path: '/', label: 'Главная', icon: HomeIcon },
     { path: '/add', label: 'Добавить ссылку', icon: PlusIcon },
     { path: '/bookmarks', label: 'Мои закладки', icon: BookmarkIcon },
+    { path: '/donate', label: 'Поддержать', icon: HeartIcon },
     { path: '/about', label: 'О проекте', icon: InformationCircleIcon },
   ];
 

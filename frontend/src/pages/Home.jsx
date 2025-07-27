@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, BookmarkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, BookmarkIcon, CheckCircleIcon, XCircleIcon, HeartIcon } from '@heroicons/react/24/outline';
 import { apiClient } from '../utils/api';
 
 const Home = () => {
@@ -72,7 +72,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <Link
                 to="/add"
                 className="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-blue-700 transition-colors"
@@ -86,6 +86,13 @@ const Home = () => {
               >
                 <BookmarkIcon className="h-5 w-5 mr-2" />
                 Мои закладки
+              </Link>
+              <Link
+                to="/donate"
+                className="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 transition-colors"
+              >
+                <HeartIcon className="h-5 w-5 mr-2" />
+                Поддержать проект
               </Link>
             </div>
 
