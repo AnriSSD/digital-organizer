@@ -64,7 +64,7 @@ const Home = () => {
               Цифровой Органайзер поможет вам сохранять и организовывать ссылки с помощью ИИ
             </p>
             
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="bg-gray-50 rounded-lg p-4 mb-8">
               <h3 className="text-sm font-medium text-gray-900 mb-2">Статус Backend API:</h3>
               <div className="flex items-center justify-center space-x-2">
                 {getStatusIcon()}
@@ -72,7 +72,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link
                 to="/add"
                 className="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-blue-700 transition-colors"
@@ -94,21 +94,6 @@ const Home = () => {
                 <HeartIcon className="h-5 w-5 mr-2" />
                 Поддержать проект
               </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-medium text-blue-900 mb-2">FastAPI Backend</h4>
-                <p className="text-sm text-blue-700">SQLite + Alembic миграции</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h4 className="font-medium text-green-900 mb-2">React + Vite</h4>
-                <p className="text-sm text-green-700">Современный фронтенд</p>
-              </div>
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <h4 className="font-medium text-purple-900 mb-2">Tailwind CSS</h4>
-                <p className="text-sm text-purple-700">Красивый и адаптивный UI</p>
-              </div>
             </div>
           </div>
         </div>
