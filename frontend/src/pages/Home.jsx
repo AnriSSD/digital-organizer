@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlusIcon, BookmarkIcon, CheckCircleIcon, XCircleIcon, HeartIcon } from '@heroicons/react/24/outline';
 import { apiClient } from '../utils/api';
+import { useLanguage } from '../hooks/useLanguage';
 
 const Home = () => {
   const [apiStatus, setApiStatus] = useState('checking');
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkApiStatus();
@@ -41,11 +43,11 @@ const Home = () => {
   const getStatusText = () => {
     switch (apiStatus) {
       case 'ok':
-        return '✓ API работает';
+        return t('home.apiWorking');
       case 'error':
-        return '✗ API недоступен';
+        return t('home.apiUnavailable');
       default:
-        return 'Проверка...';
+        return t('home.checking');
     }
   };
 
@@ -59,13 +61,13 @@ const Home = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Добро пожаловать!</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('home.welcome')}</h2>
             <p className="text-lg text-gray-600 mb-6">
-              Цифровой Органайзер поможет вам сохранять и организовывать ссылки с помощью ИИ
+              {t('home.description')}
             </p>
             
             <div className="bg-gray-50 rounded-lg p-4 mb-8">
-              <h3 className="text-sm font-medium text-gray-900 mb-2">Статус Backend API:</h3>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">{t('home.apiStatus')}</h3>
               <div className="flex items-center justify-center space-x-2">
                 {getStatusIcon()}
                 <span className="text-sm text-gray-600">{getStatusText()}</span>
@@ -78,21 +80,21 @@ const Home = () => {
                 className="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-blue-700 transition-colors"
               >
                 <PlusIcon className="h-5 w-5 mr-2" />
-                Добавить ссылку
+                {t('home.addLink')}
               </Link>
               <Link
                 to="/bookmarks"
                 className="flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 <BookmarkIcon className="h-5 w-5 mr-2" />
-                Мои закладки
+                {t('home.myBookmarks')}
               </Link>
               <Link
                 to="/donate"
                 className="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 transition-colors"
               >
                 <HeartIcon className="h-5 w-5 mr-2" />
-                Поддержать проект
+                {t('home.supportProject')}
               </Link>
             </div>
           </div>

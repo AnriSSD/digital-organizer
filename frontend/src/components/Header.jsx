@@ -1,15 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import { PlusIcon, BookmarkIcon, HomeIcon, InformationCircleIcon, TagIcon, HeartIcon } from '@heroicons/react/24/outline';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLanguage } from '../hooks/useLanguage';
 
 const Header = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   const navItems = [
-    { path: '/', label: 'Главная', icon: HomeIcon },
-    { path: '/add', label: 'Добавить ссылку', icon: PlusIcon },
-    { path: '/bookmarks', label: 'Мои закладки', icon: BookmarkIcon },
-    { path: '/donate', label: 'Поддержать', icon: HeartIcon },
-    { path: '/about', label: 'О проекте', icon: InformationCircleIcon },
+    { path: '/', label: t('header.home'), icon: HomeIcon },
+    { path: '/add', label: t('header.addLink'), icon: PlusIcon },
+    { path: '/bookmarks', label: t('header.bookmarks'), icon: BookmarkIcon },
+    { path: '/donate', label: t('header.support'), icon: HeartIcon },
+    { path: '/about', label: t('header.about'), icon: InformationCircleIcon },
   ];
 
   return (
@@ -21,26 +24,29 @@ const Header = () => {
               Цифровой Органайзер
             </Link>
           </div>
-          <nav className="hidden md:flex space-x-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-primary bg-blue-50'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <Icon className="h-4 w-4 mr-2" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+          <div className="flex items-center space-x-4">
+            <nav className="hidden md:flex space-x-1">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'text-primary bg-blue-50'
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 mr-2" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+            <LanguageSwitcher />
+          </div>
           <div className="md:hidden">
             <button className="text-gray-500 hover:text-gray-900">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
