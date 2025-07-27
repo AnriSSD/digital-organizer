@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, BookmarkIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, BookmarkIcon, HeartIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { useLanguage } from '../contexts/LanguageContext';
 import { apiClient } from '../utils/api';
 
