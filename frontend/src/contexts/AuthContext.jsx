@@ -76,7 +76,13 @@ export const AuthProvider = ({ children }) => {
         password_confirm: passwordConfirm
       });
 
-      return { success: true, user: response.data };
+      // После успешной регистрации автоматически входим в систему
+      const loginResult = await login(email, password);
+      if (loginResult.success) {
+        return { success: true, user: response.data };
+      } else {
+        return loginResult;
+      }
     } catch (error) {
       console.error('Register error:', error);
       return {

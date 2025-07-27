@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
 
 
 class UserBase(BaseModel):
@@ -19,7 +20,7 @@ class UserResponse(UserBase):
     id: int
     is_active: bool
     is_verified: bool
-    oauth_provider: Optional[str] = None
+    created_at: datetime
 
     class Config:
         from_attributes = True
@@ -36,4 +37,18 @@ class TokenData(BaseModel):
 
 class OAuthRequest(BaseModel):
     code: str
-    provider: str  # "google" или "github" 
+    provider: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
+    password_confirm: str
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str 
