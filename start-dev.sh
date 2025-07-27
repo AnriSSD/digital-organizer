@@ -13,17 +13,17 @@ cleanup() {
 # Устанавливаем обработчик сигналов
 trap cleanup SIGINT SIGTERM
 
-# Запускаем backend в фоне
+# Запускаем backend в фоне с виртуальным окружением
 echo "🔧 Запускаю backend на http://localhost:8000"
-cd backend && python main.py &
+cd backend && source venv/bin/activate && python main.py &
 BACKEND_PID=$!
 
 # Ждем немного, чтобы backend успел запуститься
-sleep 2
+sleep 3
 
 # Запускаем frontend в фоне
 echo "🎨 Запускаю frontend на http://localhost:5173"
-cd ../frontend && npm run dev &
+cd frontend && npm run dev &
 FRONTEND_PID=$!
 
 echo "✅ Оба сервера запущены!"
