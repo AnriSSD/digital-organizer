@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const CATEGORIES_STORAGE_KEY = 'digital-organizer-categories';
-const DEFAULT_CATEGORIES = ['Обучение', 'Игры', 'Работа', 'Спорт'];
+const DEFAULT_CATEGORIES = ['Обучение', 'Игры', 'Работа', 'Спорт', 'donate'];
 
 export const useCategories = () => {
   const [categories, setCategories] = useState([]);

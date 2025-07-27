@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, FunnelIcon, TagIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import TagBadge from '../components/TagBadge';
 import CategoryBadge from '../components/CategoryBadge';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import AddCategoryModal from '../components/AddCategoryModal';
 import { useCategories } from '../utils/useCategories';
 
 const Bookmarks = () => {
-  const { categories } = useCategories();
+  const { categories, addCategory, deleteCategory } = useCategories();
   const [bookmarks, setBookmarks] = useState([]);
   const [filteredBookmarks, setFilteredBookmarks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +19,7 @@ const Bookmarks = () => {
   const [readFilter, setReadFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const itemsPerPage = 10;
 
   // Получение закладок с backend
@@ -157,6 +159,20 @@ const Bookmarks = () => {
     setSelectedCategory('');
   };
 
+  const handleAddCategory = (categoryName) => {
+    addCategory(categoryName);
+  };
+
+  const handleDeleteCategory = (categoryName) => {
+    if (window.confirm(`Удалить категорию "${categoryName}"?`)) {
+      deleteCategory(categoryName);
+      // Если удаляемая категория была выбрана в фильтре, сбрасываем фильтр
+      if (selectedCategory === categoryName) {
+        setSelectedCategory('');
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -172,13 +188,22 @@ const Bookmarks = () => {
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Мои закладки</h1>
-        <Link
-          to="/add"
-          className="flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          <PlusIcon className="h-4 w-4 mr-2" />
-          Добавить ссылку
-        </Link>
+        <div className="flex space-x-3">
+          <button
+            onClick={() => setShowAddCategoryModal(true)}
+            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+          >
+            <TagIcon className="h-4 w-4 mr-2" />
+            Добавить категорию
+          </button>
+          <Link
+            to="/add"
+            className="flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            <PlusIcon className="h-4 w-4 mr-2" />
+            Добавить ссылку
+          </Link>
+        </div>
       </div>
 
       {error && (
@@ -262,6 +287,48 @@ const Bookmarks = () => {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Секция управления категориями */}
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Управление категориями</h3>
+          <span className="text-sm text-gray-500">{categories.length} категорий</span>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {categories.map((category) => (
+            <div
+              key={category}
+              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                category === 'donate' 
+                  ? 'bg-yellow-50 hover:bg-yellow-100 cursor-pointer' 
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+              onClick={category === 'donate' ? () => window.location.href = '/donate' : undefined}
+            >
+              <div className="flex items-center space-x-2">
+                <span className={`w-2 h-2 rounded-full ${
+                  category === 'donate' ? 'bg-yellow-500' : 'bg-blue-500'
+                }`}></span>
+                <span className="text-gray-900 font-medium">{category}</span>
+              </div>
+              
+              {category !== 'donate' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteCategory(category);
+                  }}
+                  className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                  title="Удалить категорию"
+                >
+                  <XMarkIcon className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Список закладок */}
@@ -359,6 +426,14 @@ const Bookmarks = () => {
           )}
         </div>
       )}
+
+      {/* Модальное окно добавления категории */}
+      <AddCategoryModal
+        isOpen={showAddCategoryModal}
+        onClose={() => setShowAddCategoryModal(false)}
+        onAddCategory={handleAddCategory}
+        categories={categories}
+      />
     </div>
   );
 };

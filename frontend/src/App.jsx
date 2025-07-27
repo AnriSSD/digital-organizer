@@ -4,7 +4,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import AddLink from './pages/AddLink';
 import Bookmarks from './pages/Bookmarks';
-import Categories from './pages/Categories';
+import Donate from './pages/Donate';
 import About from './pages/About';
 import NotFound from './pages/NotFound';
 
@@ -18,7 +18,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/add" element={<AddLink />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
-            <Route path="/categories" element={<Categories />} />
+            <Route path="/donate" element={<Donate />} />
             <Route path="/about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

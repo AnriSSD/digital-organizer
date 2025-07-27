@@ -8,7 +8,6 @@ const Header = () => {
     { path: '/', label: 'Главная', icon: HomeIcon },
     { path: '/add', label: 'Добавить ссылку', icon: PlusIcon },
     { path: '/bookmarks', label: 'Мои закладки', icon: BookmarkIcon },
-    { path: '/categories', label: 'Категории', icon: TagIcon },
     { path: '/about', label: 'О проекте', icon: InformationCircleIcon },
   ];
 
