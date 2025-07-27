@@ -4,9 +4,10 @@ import { PlusIcon, MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/o
 import TagBadge from '../components/TagBadge';
 import CategoryBadge from '../components/CategoryBadge';
 import LoadingSkeleton from '../components/LoadingSkeleton';
-import { apiClient } from '../utils/api';
+import { useCategories } from '../utils/useCategories';
 
 const Bookmarks = () => {
+  const { categories } = useCategories();
   const [bookmarks, setBookmarks] = useState([]);
   const [filteredBookmarks, setFilteredBookmarks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,47 +30,55 @@ const Bookmarks = () => {
     setError('');
 
     try {
-      const data = await apiClient.getBookmarks();
+      // Получаем закладки из localStorage
+      const storedBookmarks = localStorage.getItem('bookmarks');
+      let data = [];
+      
+      if (storedBookmarks) {
+        data = JSON.parse(storedBookmarks);
+      } else {
+        // Если нет данных, используем мок-данные для демонстрации
+        data = [
+          {
+            id: 1,
+            title: 'React Documentation',
+            description: 'Официальная документация React',
+            url: 'https://react.dev',
+            category: 'Обучение',
+            tags: ['react', 'javascript', 'frontend'],
+            is_read: false,
+            created_at: '2025-01-26T10:00:00Z'
+          },
+          {
+            id: 2,
+            title: 'Tailwind CSS Guide',
+            description: 'Полное руководство по Tailwind CSS',
+            url: 'https://tailwindcss.com/docs',
+            category: 'Обучение',
+            tags: ['css', 'tailwind', 'design'],
+            is_read: true,
+            created_at: '2025-01-25T15:30:00Z'
+          },
+          {
+            id: 3,
+            title: 'FastAPI Tutorial',
+            description: 'Изучение FastAPI для создания API',
+            url: 'https://fastapi.tiangolo.com',
+            category: 'Работа',
+            tags: ['python', 'fastapi', 'api'],
+            is_read: false,
+            created_at: '2025-01-24T09:15:00Z'
+          }
+        ];
+        // Сохраняем мок-данные в localStorage
+        localStorage.setItem('bookmarks', JSON.stringify(data));
+      }
+      
       setBookmarks(data);
       setFilteredBookmarks(data);
     } catch (error) {
       console.error('Ошибка:', error);
       setError('Не удалось загрузить закладки');
-      // Временные мок-данные для демонстрации
-      const mockData = [
-        {
-          id: 1,
-          title: 'React Documentation',
-          description: 'Официальная документация React',
-          url: 'https://react.dev',
-          category: 'Технологии',
-          tags: ['react', 'javascript', 'frontend'],
-          is_read: false,
-          created_at: '2025-01-26T10:00:00Z'
-        },
-        {
-          id: 2,
-          title: 'Tailwind CSS Guide',
-          description: 'Полное руководство по Tailwind CSS',
-          url: 'https://tailwindcss.com/docs',
-          category: 'CSS',
-          tags: ['css', 'tailwind', 'design'],
-          is_read: true,
-          created_at: '2025-01-25T15:30:00Z'
-        },
-        {
-          id: 3,
-          title: 'FastAPI Tutorial',
-          description: 'Изучение FastAPI для создания API',
-          url: 'https://fastapi.tiangolo.com',
-          category: 'Backend',
-          tags: ['python', 'fastapi', 'api'],
-          is_read: false,
-          created_at: '2025-01-24T09:15:00Z'
-        }
-      ];
-      setBookmarks(mockData);
-      setFilteredBookmarks(mockData);
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +119,7 @@ const Bookmarks = () => {
   }, [bookmarks, searchTerm, selectedCategory, selectedTags, readFilter]);
 
   // Получение уникальных категорий и тегов
-  const categories = [...new Set(bookmarks.map(b => b.category).filter(Boolean))];
+  const availableCategories = [...new Set(bookmarks.map(b => b.category).filter(Boolean))];
   const allTags = [...new Set(bookmarks.flatMap(b => b.tags))];
 
   // Пагинация
@@ -123,14 +132,18 @@ const Bookmarks = () => {
 
   const toggleReadStatus = async (bookmarkId) => {
     try {
-      await apiClient.toggleReadStatus(bookmarkId);
-      setBookmarks(prev =>
-        prev.map(bookmark =>
-          bookmark.id === bookmarkId
-            ? { ...bookmark, is_read: !bookmark.is_read }
-            : bookmark
-        )
+      // Обновляем статус в состоянии
+      const updatedBookmarks = bookmarks.map(bookmark =>
+        bookmark.id === bookmarkId
+          ? { ...bookmark, is_read: !bookmark.is_read }
+          : bookmark
       );
+      
+      setBookmarks(updatedBookmarks);
+      setFilteredBookmarks(updatedBookmarks);
+      
+      // Сохраняем в localStorage
+      localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
     } catch (error) {
       console.error('Ошибка при обновлении статуса:', error);
     }
